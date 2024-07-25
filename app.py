@@ -1,10 +1,9 @@
 # Импортируем необходимые библиотеки
-import cv2
+from PIL import Image
 import pytesseract
 from pytesseract import Output
 import streamlit as st
 import os
-import subprocess
 
 # Установка Tesseract OCR
 def install_tesseract():
@@ -21,7 +20,7 @@ pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 # Функция для обработки изображения и извлечения данных
 def process_image(image_path):
-    image = cv2.imread(image_path)
+    image = Image.open(image_path)
     custom_config = r'--oem 3 --psm 6 -l rus'
     d = pytesseract.image_to_data(image, output_type=Output.DICT, config=custom_config)
     
