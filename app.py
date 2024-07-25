@@ -4,9 +4,20 @@ import pytesseract
 from pytesseract import Output
 import streamlit as st
 import os
+import subprocess
+
+# Установка Tesseract OCR
+def install_tesseract():
+    if not os.path.isfile('/usr/bin/tesseract'):
+        st.write("Installing Tesseract OCR...")
+        os.system('sudo apt-get update')
+        os.system('sudo apt-get install -y tesseract-ocr')
+        st.write("Tesseract OCR installed.")
+
+install_tesseract()
 
 # Указываем путь к Tesseract OCR
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 # Функция для обработки изображения и извлечения данных
 def process_image(image_path):
