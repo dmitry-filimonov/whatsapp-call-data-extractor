@@ -1,41 +1,26 @@
 # Импортируем необходимые библиотеки
 from PIL import Image
-import pytesseract
-from pytesseract import Output
+import tesserocr
 import streamlit as st
-import subprocess
 import os
-
-# Установка Tesseract OCR
-def install_tesseract():
-    if not os.path.isfile('/usr/bin/tesseract'):
-        st.write("Installing Tesseract OCR...")
-        subprocess.run(['sudo', 'apt-get', 'update'], check=True)
-        subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tesseract-ocr'], check=True)
-        st.write("Tesseract OCR installed.")
-
-install_tesseract()
-
-# Указываем путь к Tesseract OCR
-pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 # Функция для обработки изображения и извлечения данных
 def process_image(image_path):
     image = Image.open(image_path)
-    custom_config = r'--oem 3 --psm 6 -l rus'
-    d = pytesseract.image_to_data(image, output_type=Output.DICT, config=custom_config)
+    text = tesserocr.image_to_text(image, lang='rus')
     
     phone_number = None
     call_date = None
     call_duration = None
     
-    for i in range(len(d['text'])):
-        if d['text'][i] == '+7':
-            phone_number = d['text'][i] + ' ' + d['text'][i+1] + ' ' + d['text'][i+2] + ' ' + d['text'][i+3]
-        if 'г.' in d['text'][i]:
-            call_date = d['text'][i-2] + ' ' + d['text'][i-1] + ' ' + d['text'][i]
-        if 'секунд' in d['text'][i]:
-            call_duration = d['text'][i-3] + ' ' + d['text'][i-2] + ' ' + d['text'][i-1] + ' ' + d['text'][i]
+    lines = text.split('\n')
+    for line in lines:
+        if line.startswith('+7'):
+            phone_number = line.strip()
+        elif 'г.' in line:
+            call_date = line.strip()
+        elif 'секунд' in line:
+            call_duration = line.strip()
     
     return phone_number, call_date, call_duration
 
