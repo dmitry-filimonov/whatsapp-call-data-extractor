@@ -3,14 +3,15 @@ from PIL import Image
 import pytesseract
 from pytesseract import Output
 import streamlit as st
+import subprocess
 import os
 
 # Установка Tesseract OCR
 def install_tesseract():
     if not os.path.isfile('/usr/bin/tesseract'):
         st.write("Installing Tesseract OCR...")
-        os.system('sudo apt-get update')
-        os.system('sudo apt-get install -y tesseract-ocr')
+        subprocess.run(['sudo', 'apt-get', 'update'], check=True)
+        subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tesseract-ocr'], check=True)
         st.write("Tesseract OCR installed.")
 
 install_tesseract()
